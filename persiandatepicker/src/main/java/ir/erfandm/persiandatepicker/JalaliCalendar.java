@@ -510,9 +510,28 @@ public class JalaliCalendar {
     }
 
     public void add(int field, int value) {
-        GregorianCalendar gc = toGregorian();
-        gc.add(field, value);
-        fromGregorian(gc);
+        if (field == Calendar.YEAR) {
+            setYear(getYear() + value);
+        } else if (field == Calendar.MONTH) {
+            int totalMonths = (getMonth() - 1) + value; // Convert to zero-based
+            int newYear = getYear() + (totalMonths / 12);
+            int newMonth = (totalMonths % 12) + 1; // Convert back to one-based
+            if (newMonth < 0) {
+                newMonth += 12;
+                newYear--;
+            }
+            setYear(newYear);
+            setMonth(newMonth);
+        } else if (field == Calendar.DAY_OF_MONTH || field == Calendar.DAY_OF_YEAR) {
+            // Convert to Gregorian, add days, and convert back
+            GregorianCalendar gregorian = toGregorian();
+            gregorian.add(Calendar.DAY_OF_MONTH, value);
+            fromGregorian(gregorian);
+        } else {
+            GregorianCalendar gc = toGregorian();
+            gc.add(field, value);
+            fromGregorian(gc);
+        }
     }
 
     public void setDateFromString(String jalaliDateStr) {
