@@ -36,13 +36,15 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.internal.ViewUtils;
 
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
+import java.util.Date;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 final class MaterialCalendarGridView extends GridView {
 
-  private final Calendar dayCompute = UtcDates.getUtcCalendar();
+  private final JalaliCalendar dayCompute = UtcDates.getUtcCalendarToJalali();
   private final boolean nestedScrollable;
 
   public MaterialCalendarGridView(Context context) {

@@ -26,7 +26,7 @@ import androidx.core.util.ObjectsCompat;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Arrays;
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
 import java.util.Objects;
 
 /**

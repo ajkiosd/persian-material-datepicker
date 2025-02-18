@@ -60,7 +60,7 @@ import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import com.ibm.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
 
 import ir.erfandm.persiandatepicker.R;

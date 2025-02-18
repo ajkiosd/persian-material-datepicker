@@ -22,13 +22,12 @@ import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.ULocale;
-
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 /** Util methods for formatting date strings for use in {@link MaterialDatePicker}. */
@@ -37,11 +36,8 @@ class DateStrings {
   private DateStrings() {}
 
   static String getYearMonth(long timeInMillis) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getYearMonthFormat(UtcDates.PERSIAN_LOCALE).format(new Date(timeInMillis));
-    }
-    int flags = DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_UTC;
-    return DateUtils.formatDateTime(null, timeInMillis, flags);
+    var calendar = new JalaliCalendar(new Date(timeInMillis));
+    return calendar.getMonthString() + " " + String.format(UtcDates.PERSIAN_LOCALE, "%d", calendar.getYear());
   }
 
   static String getYearMonthDay(long timeInMillis) {
@@ -58,11 +54,9 @@ class DateStrings {
    * @param locale Locale for date string.
    * @return Date string with year, month, and day formatted properly for the specified Locale.
    */
-  static String getYearMonthDay(long timeInMillis, ULocale locale) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getYearAbbrMonthDayFormat(locale).format(new Date(timeInMillis));
-    }
-    return UtcDates.getMediumFormat(locale).format(new Date(timeInMillis));
+  static String getYearMonthDay(long timeInMillis, Locale locale) {
+    var calendar = new JalaliCalendar(new Date(timeInMillis));
+    return String.format(locale, "%d", calendar.getDay()) + " " + calendar.getMonthString() + " " + String.format(locale, "%d", calendar.getYear());
   }
 
   static String getMonthDay(long timeInMillis) {
@@ -79,33 +73,27 @@ class DateStrings {
    * @param locale Locale for date string.
    * @return Date string with month and day formatted properly for the specified Locale.
    */
-  static String getMonthDay(long timeInMillis, ULocale locale) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getAbbrMonthDayFormat(locale).format(new Date(timeInMillis));
-    }
-    return UtcDates.getMediumNoYear(locale).format(new Date(timeInMillis));
+  static String getMonthDay(long timeInMillis, Locale locale) {
+    var calendar = new JalaliCalendar(new Date(timeInMillis));
+    return String.format(locale, "%d", calendar.getDay()) + " " + calendar.getMonthString();
   }
 
   static String getMonthDayOfWeekDay(long timeInMillis) {
     return getMonthDayOfWeekDay(timeInMillis, UtcDates.PERSIAN_LOCALE);
   }
 
-  static String getMonthDayOfWeekDay(long timeInMillis, ULocale locale) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getMonthWeekdayDayFormat(locale).format(new Date(timeInMillis));
-    }
-    return UtcDates.getFullFormat(locale).format(new Date(timeInMillis));
+  static String getMonthDayOfWeekDay(long timeInMillis, Locale locale) {
+    var calendar = new JalaliCalendar(new Date(timeInMillis));
+    return calendar.getDayOfWeekString() + " " + String.format(locale, "%d", calendar.getDay()) + " " + calendar.getMonthString();
   }
 
   static String getYearMonthDayOfWeekDay(long timeInMillis) {
     return getYearMonthDayOfWeekDay(timeInMillis, UtcDates.PERSIAN_LOCALE);
   }
 
-  static String getYearMonthDayOfWeekDay(long timeInMillis, ULocale locale) {
-    if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      return UtcDates.getYearMonthWeekdayDayFormat(locale).format(new Date(timeInMillis));
-    }
-    return UtcDates.getFullFormat(locale).format(new Date(timeInMillis));
+  static String getYearMonthDayOfWeekDay(long timeInMillis, Locale locale) {
+    var calendar = new JalaliCalendar(new Date(timeInMillis));
+    return calendar.getDayOfWeekString() + " " + String.format(locale, "%d", calendar.getDay()) + " " + calendar.getMonthString() + " " + String.format(locale, "%d", calendar.getYear());
   }
 
   /**
@@ -147,8 +135,8 @@ class DateStrings {
   }
 
   private static boolean isDateWithinCurrentYear(long timeInMillis) {
-    Calendar currentCalendar = UtcDates.getTodayCalendar();
-    Calendar calendarDate = UtcDates.getUtcCalendar();
+    JalaliCalendar currentCalendar = UtcDates.getTodayCalendarToJalali();
+    JalaliCalendar calendarDate = UtcDates.getUtcCalendarToJalali();
     calendarDate.setTimeInMillis(timeInMillis);
     return currentCalendar.get(Calendar.YEAR) == calendarDate.get(Calendar.YEAR);
   }
@@ -183,10 +171,10 @@ class DateStrings {
       return Pair.create(getDateString(start, userDefinedDateFormat), null);
     }
 
-    Calendar currentCalendar = UtcDates.getTodayCalendar();
-    Calendar startCalendar = UtcDates.getUtcCalendar();
+    JalaliCalendar currentCalendar = UtcDates.getTodayCalendarToJalali();
+    JalaliCalendar startCalendar = UtcDates.getUtcCalendarToJalali();
     startCalendar.setTimeInMillis(start);
-    Calendar endCalendar = UtcDates.getUtcCalendar();
+    JalaliCalendar endCalendar = UtcDates.getUtcCalendarToJalali();
     endCalendar.setTimeInMillis(end);
 
     if (userDefinedDateFormat != null) {

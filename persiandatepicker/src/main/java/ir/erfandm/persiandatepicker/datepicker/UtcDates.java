@@ -19,15 +19,16 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.ibm.icu.text.DateFormat;
-import com.ibm.icu.text.DisplayContext;
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.TimeZone;
-import com.ibm.icu.util.ULocale;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+import java.util.Locale;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 /**
@@ -38,7 +39,7 @@ class UtcDates {
 
   static final String TEHRAN = "Asia/Tehran";
 
-  static final ULocale PERSIAN_LOCALE = new ULocale("fa_IR@calendar=persian");
+  static final Locale PERSIAN_LOCALE = new Locale("fa", "IR");
 
   static AtomicReference<TimeSource> timeSourceRef = new AtomicReference<>();
 
@@ -74,15 +75,23 @@ class UtcDates {
     return today;
   }
 
+  static JalaliCalendar getTodayCalendarToJalali() {
+    return new JalaliCalendar(new Date(getTodayCalendar().getTimeInMillis()));
+  }
+
   /**
    * Returns an empty Calendar in UTC time zone.
    *
    * @return An empty Calendar in UTC time zone.
-   * @see {@link #getUtcCalendarOf(Calendar)}
+   * @see
    * @see Calendar#clear()
    */
   static Calendar getUtcCalendar() {
     return getUtcCalendarOf(null);
+  }
+
+  static JalaliCalendar getUtcCalendarToJalali() {
+    return new JalaliCalendar(new Date(getUtcCalendar().getTimeInMillis()));
   }
 
   /**
@@ -111,6 +120,12 @@ class UtcDates {
    * @param rawCalendar the Calendar object representing the moment to process.
    * @return A Calendar object representing the start of day in UTC time zone.
    */
+
+  static JalaliCalendar getDayCopy(JalaliCalendar rawCalendar) {
+    var d = getDayCopy(rawCalendar.toGregorian());
+    return new JalaliCalendar(new Date(d.getTimeInMillis()));
+  }
+
   static Calendar getDayCopy(Calendar rawCalendar) {
     Calendar rawCalendarInUtc = getUtcCalendarOf(rawCalendar);
     Calendar utcCalendar = getUtcCalendar();
@@ -135,15 +150,13 @@ class UtcDates {
     return sanitizedStartItem.getTimeInMillis();
   }
 
-  private static DateFormat getAndroidFormat(String pattern, ULocale locale) {
-    DateFormat format =
-        DateFormat.getInstanceForSkeleton(pattern, locale);
-    format.setTimeZone(getUtcAndroidTimeZone());
-    format.setContext(DisplayContext.CAPITALIZATION_FOR_STANDALONE);
+  private static SimpleDateFormat getAndroidFormat(String pattern, Locale locale) {
+    SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
+    format.setTimeZone(TimeZone.getTimeZone("UTC"));
     return format;
   }
 
-  private static DateFormat getFormat(int style, ULocale locale) {
+  private static DateFormat getFormat(int style, Locale locale) {
     DateFormat format = DateFormat.getDateInstance(style, locale);
     format.setTimeZone(getTimeZone());
     return format;
@@ -208,63 +221,6 @@ class UtcDates {
         .replaceAll("y{1,4}", "yyyy")
         .replaceAll("\\.$", "") // Removes a dot suffix that appears in some formats
         .replaceAll("My", "M/y"); // Edge case for the Kako locale
-  }
-
-  static SimpleDateFormat getSimpleFormat(String pattern) {
-    return getSimpleFormat(pattern, PERSIAN_LOCALE);
-  }
-
-  private static SimpleDateFormat getSimpleFormat(String pattern, ULocale locale) {
-    SimpleDateFormat format = new SimpleDateFormat(pattern, locale);
-    format.setTimeZone(getTimeZone());
-    return format;
-  }
-
-  static DateFormat getYearMonthFormat(ULocale locale) {
-//    return getAndroidFormat(DateFormat.YEAR_MONTH, locale);
-    return getAndroidFormat("MMMy", locale);
-  }
-
-  static DateFormat getYearAbbrMonthDayFormat(ULocale locale) {
-    return getAndroidFormat(DateFormat.YEAR_ABBR_MONTH_DAY, locale);
-  }
-
-  static DateFormat getAbbrMonthDayFormat(ULocale locale) {
-    return getAndroidFormat(DateFormat.ABBR_MONTH_DAY, locale);
-  }
-
-  static DateFormat getMonthWeekdayDayFormat(ULocale locale) {
-    return getAndroidFormat(DateFormat.MONTH_WEEKDAY_DAY, locale);
-  }
-
-  static DateFormat getYearMonthWeekdayDayFormat(ULocale locale) {
-    return getAndroidFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY, locale);
-  }
-
-  static DateFormat getMediumFormat() {
-    return getMediumFormat(PERSIAN_LOCALE);
-  }
-
-  static DateFormat getMediumFormat(ULocale locale) {
-    return getFormat(DateFormat.MEDIUM, locale);
-  }
-
-  static DateFormat getMediumNoYear() {
-    return getMediumNoYear(PERSIAN_LOCALE);
-  }
-
-  static DateFormat getMediumNoYear(ULocale locale) {
-    SimpleDateFormat format = (SimpleDateFormat) getMediumFormat(locale);
-    format.applyPattern(removeYearFromDateFormatPattern(format.toPattern()));
-    return format;
-  }
-
-  static DateFormat getFullFormat() {
-    return getFullFormat(PERSIAN_LOCALE);
-  }
-
-  static DateFormat getFullFormat(ULocale locale) {
-    return getFormat(DateFormat.FULL, locale);
   }
 
   @NonNull

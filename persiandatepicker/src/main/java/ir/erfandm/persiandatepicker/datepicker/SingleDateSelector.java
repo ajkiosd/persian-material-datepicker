@@ -33,10 +33,12 @@ import androidx.core.util.Pair;
 import com.google.android.material.internal.ManufacturerUtils;
 import com.google.android.material.resources.MaterialAttributes;
 import com.google.android.material.textfield.TextInputLayout;
-import com.ibm.icu.text.SimpleDateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 /**
@@ -127,9 +129,11 @@ public class SingleDateSelector implements DateSelector<Long> {
 
     dateTextInput.setPlaceholderText(formatHint);
     if (selectedItem != null) {
-      dateEditText.setText(format.format(selectedItem));
+      var str = (new JalaliCalendar(new Date(selectedItem))).toString();
+      dateEditText.setText(str);
     }
 
+    dateEditText.setTextDirection(View.TEXT_DIRECTION_LTR);
     dateEditText.addTextChangedListener(
         new DateFormatTextWatcher(formatHint, format, dateTextInput, constraints) {
 

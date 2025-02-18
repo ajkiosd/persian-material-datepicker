@@ -20,11 +20,14 @@ import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ir.erfandm.persiandatepicker.JalaliCalendar;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.GregorianCalendar;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /** Contains convenience operations for a month within a specific year. */
 final class Month implements Comparable<Month>, Parcelable {
@@ -59,7 +62,7 @@ final class Month implements Comparable<Month>, Parcelable {
   })
   @interface Months {}
 
-  @NonNull private final Calendar firstOfMonth;
+  @NonNull private final JalaliCalendar firstOfMonth;
   @Months final int month;
   final int year;
   final int daysInWeek;
@@ -68,7 +71,7 @@ final class Month implements Comparable<Month>, Parcelable {
 
   @Nullable private String longName;
 
-  private Month(@NonNull Calendar rawCalendar) {
+  private Month(@NonNull JalaliCalendar rawCalendar) {
     rawCalendar.set(Calendar.DAY_OF_MONTH, 1);
     firstOfMonth = UtcDates.getDayCopy(rawCalendar);
     month = firstOfMonth.get(Calendar.MONTH);
@@ -84,7 +87,7 @@ final class Month implements Comparable<Month>, Parcelable {
    */
   @NonNull
   static Month create(long timeInMillis) {
-    Calendar calendar = UtcDates.getUtcCalendar();
+    JalaliCalendar calendar = UtcDates.getUtcCalendarToJalali();
     calendar.setTimeInMillis(timeInMillis);
     return new Month(calendar);
   }
@@ -99,7 +102,7 @@ final class Month implements Comparable<Month>, Parcelable {
    */
   @NonNull
   static Month create(int year, @Months int month) {
-    Calendar calendar = UtcDates.getUtcCalendar();
+    JalaliCalendar calendar = UtcDates.getUtcCalendarToJalali();
     calendar.set(Calendar.YEAR, year);
     calendar.set(Calendar.MONTH, month);
     return new Month(calendar);
@@ -111,7 +114,7 @@ final class Month implements Comparable<Month>, Parcelable {
    */
   @NonNull
   static Month current() {
-    return new Month(UtcDates.getTodayCalendar());
+    return new Month(UtcDates.getTodayCalendarToJalali());
   }
 
   int daysFromStartOfWeekToFirstOfMonth(int firstDayOfWeek) {
@@ -144,7 +147,7 @@ final class Month implements Comparable<Month>, Parcelable {
 
   @Override
   public int compareTo(@NonNull Month other) {
-    return firstOfMonth.compareTo(other.firstOfMonth);
+    return firstOfMonth.toGregorian().compareTo(other.firstOfMonth.toGregorian());
   }
 
   /**
@@ -179,13 +182,13 @@ final class Month implements Comparable<Month>, Parcelable {
    *     and year
    */
   long getDay(int day) {
-    Calendar dayCalendar = UtcDates.getDayCopy(firstOfMonth);
+    JalaliCalendar dayCalendar = UtcDates.getDayCopy(firstOfMonth);
     dayCalendar.set(Calendar.DAY_OF_MONTH, day);
     return dayCalendar.getTimeInMillis();
   }
 
   int getDayOfMonth(long date) {
-    Calendar dayCalendar = UtcDates.getDayCopy(firstOfMonth);
+    JalaliCalendar dayCalendar = UtcDates.getDayCopy(firstOfMonth);
     dayCalendar.setTimeInMillis(date);
     return dayCalendar.get(Calendar.DAY_OF_MONTH);
   }
@@ -196,7 +199,7 @@ final class Month implements Comparable<Month>, Parcelable {
    */
   @NonNull
   Month monthsLater(int months) {
-    Calendar laterMonth = UtcDates.getDayCopy(firstOfMonth);
+    JalaliCalendar laterMonth = UtcDates.getDayCopy(firstOfMonth);
     laterMonth.add(Calendar.MONTH, months);
     return new Month(laterMonth);
   }

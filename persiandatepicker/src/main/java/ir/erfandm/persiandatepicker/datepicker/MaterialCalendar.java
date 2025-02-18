@@ -47,8 +47,9 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.google.android.material.button.MaterialButton;
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 /**
@@ -266,8 +267,8 @@ public final class MaterialCalendar<S> extends PickerFragment<S> {
   private ItemDecoration createItemDecoration() {
     return new ItemDecoration() {
 
-      private final Calendar startItem = UtcDates.getUtcCalendar();
-      private final Calendar endItem = UtcDates.getUtcCalendar();
+      private final JalaliCalendar startItem = UtcDates.getUtcCalendarToJalali();
+      private final JalaliCalendar endItem = UtcDates.getUtcCalendarToJalali();
 
       @Override
       public void onDraw(

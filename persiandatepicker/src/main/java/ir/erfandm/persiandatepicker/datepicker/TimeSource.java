@@ -16,8 +16,8 @@
 package ir.erfandm.persiandatepicker.datepicker;
 
 import androidx.annotation.Nullable;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.TimeZone;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /** Provider for the current date and time. */
 class TimeSource {

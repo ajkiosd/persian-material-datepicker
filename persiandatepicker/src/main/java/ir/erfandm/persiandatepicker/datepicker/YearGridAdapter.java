@@ -23,9 +23,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 import ir.erfandm.persiandatepicker.datepicker.MaterialCalendar.CalendarSelector;
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 class YearGridAdapter extends RecyclerView.Adapter<YearGridAdapter.ViewHolder> {
@@ -63,7 +65,7 @@ class YearGridAdapter extends RecyclerView.Adapter<YearGridAdapter.ViewHolder> {
     viewHolder.textView.setContentDescription(
         DateStrings.getYearContentDescription(viewHolder.textView.getContext(), year));
     CalendarStyle styles = materialCalendar.getCalendarStyle();
-    Calendar calendar = UtcDates.getTodayCalendar();
+    JalaliCalendar calendar = UtcDates.getTodayCalendarToJalali();
     CalendarItemStyle style = calendar.get(Calendar.YEAR) == year ? styles.todayYear : styles.year;
     for (Long day : materialCalendar.getDateSelector().getSelectedDays()) {
       calendar.setTimeInMillis(day);

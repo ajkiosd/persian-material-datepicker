@@ -23,10 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.internal.TextWatcherAdapter;
 import com.google.android.material.textfield.TextInputLayout;
-import com.ibm.icu.text.DateFormat;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 abstract class DateFormatTextWatcher extends TextWatcherAdapter {
@@ -66,8 +67,7 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
           String exampleLine =
               String.format(
                   context.getString(R.string.mtrl_picker_invalid_format_example),
-                  sanitizeDateString(
-                      df.format(new Date(UtcDates.getTodayCalendar().getTimeInMillis()))));
+                  sanitizeDateString(new JalaliCalendar(new Date()).toString()));
           textLayout.setError(invalidFormat + "\n" + useLine + "\n" + exampleLine);
           onInvalidDate();
         };
@@ -84,12 +84,15 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
     textInputLayout.setError(null);
     onValidDate(null);
 
-    if (TextUtils.isEmpty(s) || s.length() < formatHint.length()) {
+//    if (TextUtils.isEmpty(s) || s.length() < formatHint.length()) {
+    if (TextUtils.isEmpty(s)) {
       return;
     }
 
     try {
-      Date date = dateFormat.parse(s.toString());
+      var cal = new JalaliCalendar();
+      cal.setDateFromString(s.toString());
+      Date date = new Date(cal.toGregorian().getTimeInMillis());
       textInputLayout.setError(null);
       final long milliseconds = date.getTime();
       if (constraints.getDateValidator().isValid(milliseconds)
@@ -100,7 +103,7 @@ abstract class DateFormatTextWatcher extends TextWatcherAdapter {
 
       setRangeErrorCallback = createRangeErrorCallback(milliseconds);
       runValidation(textInputLayout, setRangeErrorCallback);
-    } catch (ParseException e) {
+    } catch (Exception e) {
       runValidation(textInputLayout, setErrorCallback);
     }
   }

@@ -24,10 +24,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ibm.icu.text.SimpleDateFormat;
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
 import java.util.Locale;
 
+import ir.erfandm.persiandatepicker.JalaliCalendar;
 import ir.erfandm.persiandatepicker.R;
 
 /**
@@ -37,7 +37,7 @@ import ir.erfandm.persiandatepicker.R;
  */
 class DaysOfWeekAdapter extends BaseAdapter {
 
-  @NonNull private final Calendar calendar = UtcDates.getUtcCalendar();
+  @NonNull private final JalaliCalendar calendar = UtcDates.getUtcCalendarToJalali();
   private final int daysInWeek = calendar.getMaximum(Calendar.DAY_OF_WEEK);
   private final int firstDayOfWeek;
   /** Style value from Calendar.NARROW_FORMAT unavailable before 1.8 */
@@ -89,8 +89,8 @@ class DaysOfWeekAdapter extends BaseAdapter {
           (TextView) layoutInflater.inflate(R.layout.calendar_day_of_week, parent, false);
     }
     calendar.set(Calendar.DAY_OF_WEEK, positionToDayOfWeek(position));
-    String dayOfWeekName = new SimpleDateFormat("eeeee", UtcDates.PERSIAN_LOCALE)
-            .format(calendar.getTimeInMillis());
+    String dayOfWeekName = calendar.getDayOfWeekShortString();
+
     dayOfWeek.setText(dayOfWeekName);
     dayOfWeek.setContentDescription(
         String.format(parent.getContext().getString(R.string.mtrl_picker_day_of_week_column_header),

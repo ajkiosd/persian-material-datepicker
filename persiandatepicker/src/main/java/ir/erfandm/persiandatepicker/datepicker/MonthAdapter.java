@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
-import com.ibm.icu.util.Calendar;
+import java.util.Calendar;
 import java.util.Collection;
 
 import ir.erfandm.persiandatepicker.R;
@@ -136,7 +136,7 @@ class MonthAdapter extends BaseAdapter {
       dayNumber = offsetPosition + 1;
       // The tag and text uniquely identify the view within the MaterialCalendar for testing
       dayTextView.setTag(month);
-      dayTextView.setText(String.format(UtcDates.PERSIAN_LOCALE.toLocale(), "%d", dayNumber));
+      dayTextView.setText(String.format(UtcDates.PERSIAN_LOCALE, "%d", dayNumber));
       dayTextView.setVisibility(View.VISIBLE);
       dayTextView.setEnabled(true);
     }
